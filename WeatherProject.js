@@ -6,23 +6,36 @@ import {
     View
 } from 'react-native';
 
+var Forecast = require('./Forecast');
+
 class WeatherProject extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            zip: ''
+            zip: '',
+            forecast: {
+                main: 'Clouds',
+                description: 'few clouds',
+                temp: 45.7
+            }
         };
     }
+
     _handleTextChange(event) {
         this.setState({zip: event.nativeEvent.text})
     }
+
     render() {
         return (
             <View style={styles.container}>
-                <TextInput style={styles.input} onSubmitEditing={this._handleTextChange.bind(this)} />
+                <TextInput style={styles.input} onSubmitEditing={this._handleTextChange.bind(this)}/>
                 <Text style={styles.welcome}>
                     Your input {this.state.zip}
                 </Text>
+                <Forecast
+                    main={this.state.forecast.main}
+                    description={this.state.forecast.description}
+                    temp={this.state.forecast.temp}/>
             </View>
         );
     }
@@ -41,7 +54,7 @@ const styles = StyleSheet.create({
         margin: 10,
     },
     input: {
-      fontSize: 20,
+        fontSize: 20,
         borderWidth: 2,
         height: 40
     },
