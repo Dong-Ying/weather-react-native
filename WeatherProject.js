@@ -3,6 +3,7 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    Image,
     View
 } from 'react-native';
 
@@ -28,37 +29,63 @@ class WeatherProject extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <TextInput style={styles.input} onSubmitEditing={this._handleTextChange.bind(this)}/>
-                <Text style={styles.welcome}>
-                    Your input {this.state.zip}
-                </Text>
-                <Forecast
-                    main={this.state.forecast.main}
-                    description={this.state.forecast.description}
-                    temp={this.state.forecast.temp}/>
+                <Image source={require('./images/sky.jpg')}
+                       style={styles.backdrop}>
+                    <View style={styles.overlay}>
+                        <View style={styles.row}>
+                            <Text style={styles.mainText}>
+                                Current weather for
+                            </Text>
+                            <View style={styles.zipContainer}>
+                                <TextInput
+                                    style={[styles.zipCode, styles.mainText]}
+                                    returnKeyType="go"
+                                    onSubmitEditing={this._handleTextChange.bind(this)}/>
+                            </View>
+                        </View>
+                        <Forecast
+                            main={this.state.forecast.main}
+                            description={this.state.forecast.description}
+                            temp={this.state.forecast.temp}/>
+                    </View>
+                </Image>
             </View>
         );
     }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        paddingTop: 30
     },
-    welcome: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
+    backdrop: {
+        flex: 1,
+        width: null,
+        height: null,
+        resizeMode: "cover"
     },
-    input: {
-        fontSize: 20,
-        borderWidth: 2,
-        height: 40
+    overlay: {
+        paddingTop: 20,
+        backgroundColor: '#000000',
+        opacity: 0.5
     },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+    zipContainer: {
+        marginLeft: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: '#DDDDDD'
+    },
+    zipCode: {
+        width: 50,
+        height: 16
+    },
+    mainText: {
+        color: '#FFFFFF'
+    }
 });
-
 
 module.exports = WeatherProject;

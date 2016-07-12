@@ -23,7 +23,7 @@ class Forecast extends Component {
     }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
     bigText: {
         fontSize: 20,
         textAlign: 'center',
