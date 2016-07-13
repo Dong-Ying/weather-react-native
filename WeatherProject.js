@@ -13,7 +13,7 @@ class WeatherProject extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            zip: '',
+            city: '',
             forecast: {
                 main: 'Clouds',
                 description: 'few clouds',
@@ -22,8 +22,24 @@ class WeatherProject extends Component {
         };
     }
 
-    _handleTextChange(event) {
-        this.setState({zip: event.nativeEvent.text})
+    _handleTextChange(city) {
+        var endpoint = "http://api.openweathermap.org/data/2.5/weather?q=" + city + ",cn&units=metric&lang=zh_cn&APPID=a8ff30eed7887841a717c0e71af4afdd";
+        fetch(endpoint)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                this.setState({
+                    city: city,
+                    forecast: {
+                        main: responseJson.weather[0].main,
+                        description: responseJson.weather[0].description,
+                        temp: responseJson.main.temp
+                    }
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+            .done();
     }
 
     render() {
@@ -40,7 +56,7 @@ class WeatherProject extends Component {
                                 <TextInput
                                     style={[styles.zipCode, styles.mainText]}
                                     returnKeyType="go"
-                                    onSubmitEditing={this._handleTextChange.bind(this)}/>
+                                    onSubmitEditing={(event) => {this._handleTextChange(event.nativeEvent.text)}}/>
                             </View>
                         </View>
                         <Forecast
