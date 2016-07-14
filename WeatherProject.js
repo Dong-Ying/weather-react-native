@@ -6,9 +6,11 @@ import {
     Image,
     View,
     CameraRoll,
-    TouchableOpacity
+    TouchableOpacity,
+    Platform
 } from 'react-native';
 
+var ImagePicker = require('react-native-image-picker');
 var Forecast = require('./Forecast');
 
 class WeatherProject extends Component {
@@ -46,13 +48,28 @@ class WeatherProject extends Component {
     }
 
     _switchBackgroundImage() {
-        CameraRoll.getPhotos({first: 1})
-            .then((photos) => {
-                var uri = photos.edges[0].node.image.uri;
+        var options = {
+            title: 'Select your background image'
+        };
+        ImagePicker.showImagePicker(options, (response)=> {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else {
+                var source;
+                if (Platform.OS === 'ios') {
+                    source = {uri: response.uri.replace('file://', ''), isStatic: true};
+                } else {
+                    source = {uri: response.uri, isStatic: true};
+                }
                 this.setState({
-                    backgroundImage: {uri: uri}
+                    backgroundImage: source
                 });
-            })
+            }
+        });
     }
 
     render() {
