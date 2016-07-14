@@ -4,7 +4,9 @@ import {
     Text,
     TextInput,
     Image,
-    View
+    View,
+    CameraRoll,
+    TouchableOpacity
 } from 'react-native';
 
 var Forecast = require('./Forecast');
@@ -18,7 +20,8 @@ class WeatherProject extends Component {
                 main: 'Clouds',
                 description: 'few clouds',
                 temp: 45.7
-            }
+            },
+            backgroundImage: require('./images/sky.jpg')
         };
     }
 
@@ -42,10 +45,20 @@ class WeatherProject extends Component {
             .done();
     }
 
+    _switchBackgroundImage() {
+        CameraRoll.getPhotos({first: 1})
+            .then((photos) => {
+                var uri = photos.edges[0].node.image.uri;
+                this.setState({
+                    backgroundImage: {uri: uri}
+                });
+            })
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <Image source={require('./images/sky.jpg')}
+                <Image source={this.state.backgroundImage}
                        style={styles.backdrop}>
                     <View style={styles.overlay}>
                         <View style={styles.row}>
@@ -63,6 +76,9 @@ class WeatherProject extends Component {
                             main={this.state.forecast.main}
                             description={this.state.forecast.description}
                             temp={this.state.forecast.temp}/>
+                        <TouchableOpacity onPress={this._switchBackgroundImage.bind(this)}>
+                            <Text style={{color: 'red'}}>Switch Background</Text>
+                        </TouchableOpacity>
                     </View>
                 </Image>
             </View>
