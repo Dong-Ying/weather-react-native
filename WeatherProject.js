@@ -19,21 +19,38 @@ class WeatherProject extends Component {
         this.state = {
             city: '',
             forecast: {
-                main: 'Clouds',
-                description: 'few clouds',
-                temp: 45.7
+                main: '',
+                description: '',
+                temp: 0
             },
             backgroundImage: require('./images/sky.jpg')
         };
     }
 
-    _handleTextChange(city) {
-        var endpoint = "http://api.openweathermap.org/data/2.5/weather?q=" + city + ",cn&units=metric&lang=zh_cn&APPID=a8ff30eed7887841a717c0e71af4afdd";
+    componentDidMount() {
+        navigator.geolocation.getCurrentPosition((position)=> {
+            this._getWeatherByCoordinates(position.coords.latitude, position.coords.longitude)
+        }, (error)=> {
+            console.log(error);
+        }, {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000});
+    }
+
+    _getWeatherByCoordinates(lat, lon) {
+        var endpoint = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&units=metric&lang=zh_cn&APPID=${APPID}";
+        this._fetchWeather(endpoint);
+    }
+
+    _getWeatherByCityName(city) {
+        var endpoint = "http://api.openweathermap.org/data/2.5/weather?q=" + city + ",cn&units=metric&lang=zh_cn&APPID=${APPID}";
+        this._fetchWeather(endpoint);
+    }
+
+    _fetchWeather(endpoint) {
         fetch(endpoint)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState({
-                    city: city,
+                    city: responseJson.name,
                     forecast: {
                         main: responseJson.weather[0].main,
                         description: responseJson.weather[0].description,
@@ -47,6 +64,11 @@ class WeatherProject extends Component {
             .done();
     }
 
+    _onUserInputChange(input) {
+        this.setState({
+            city: input
+        });
+    }
     _switchBackgroundImage() {
         var options = {
             title: 'Select your background image'
@@ -84,9 +106,11 @@ class WeatherProject extends Component {
                             </Text>
                             <View style={styles.zipContainer}>
                                 <TextInput
+                                    value={this.state.city}
                                     style={[styles.zipCode, styles.mainText]}
                                     returnKeyType="go"
-                                    onSubmitEditing={(event) => {this._handleTextChange(event.nativeEvent.text)}}/>
+                                    onSubmitEditing={(event) => {this._getWeatherByCityName(event.nativeEvent.text)}}
+                                    onChangeText={(text) => {this._onUserInputChange(text)}}/>
                             </View>
                         </View>
                         <Forecast
